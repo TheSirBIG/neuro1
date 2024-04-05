@@ -17,10 +17,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    simpleneuronetworkclass.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    simpleneuronetworkclass.h
 
 FORMS += \
     mainwindow.ui
