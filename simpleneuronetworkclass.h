@@ -11,17 +11,10 @@ enum class funcType { Sigmoid, Tanh, ReLU, LeakyReLU, ELU, Softplus, Softsign };
 
 typedef struct
 {
-    int numOfNextLevelNeurons = 0;
-    double value = 0;
-    double *weights = NULL;
-} neuronStruct;
-
-typedef struct
-{
     int numOfNeurons = 0;                   //число нейронов в слое
     int numOfNextLevelNeurons = 0;          //по сути - количество "синапсов"
     double *values = NULL;                  //динамический массив значений нейрона
-    double *weights = NULL;                 //динамический массив значений весов "синапсов"
+    double **weights = NULL;                 //динамический массив значений весов "синапсов"
 } layerStruct;
 
 class simpleNeuroNetworkClass
@@ -34,13 +27,17 @@ public:
     double (simpleNeuroNetworkClass::*activationFunc) (double);
     double (simpleNeuroNetworkClass::*dactivationFunc) (double);
 
-    void createInputLayer(int numOfNeurons);
+    void createNetwork(int _numInput, int _numInternal, int _numOutput, int _numInEachInternal[]);
+    layerStruct *inputLayer = NULL;
+    layerStruct **internalLayer = NULL;
+    layerStruct *outputLayer = NULL;
 
-    void createNetwork(int _numOfInternalLayers, int _numOfNeurons[]);
-    layerStruct *network = NULL;
+    void setFunctionType(funcType _functionType = funcType::Sigmoid, double _alpha = 0);
+    void setWeights(double *input, double *internal);
+    void setInitialValues(double input[]);
+    void getOutputValues(double output[]);
+    void Calculate(void);
 private:
-    int numOfInputNeurons = 0;
-    int numOfOutputNeurons = 0;
     int numOfInternalLayers = 1;
 
     /* функции активации и их производные */
