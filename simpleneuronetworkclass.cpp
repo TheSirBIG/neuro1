@@ -80,6 +80,7 @@ void simpleNeuroNetworkClass::Calculate()
         for(int j=0; j<internalLayer[k]->numOfNeurons; j++)
         {
             summ = 0;
+            if(useB) summ = prevLayer->b[j];
             for(int i=0; i<prevLayer->numOfNeurons; i++)
                 summ += prevLayer->values[i]*prevLayer->weights[i][j];
             internalLayer[k]->values[j] = (this->*activationFunc)(summ);
@@ -89,10 +90,27 @@ void simpleNeuroNetworkClass::Calculate()
     for(int j=0; j<outputLayer->numOfNeurons; j++)
     {
         summ = 0;
+        if(useB) summ = prevLayer->b[j];
         for(int i=0; i<prevLayer->numOfNeurons; i++)
             summ += prevLayer->values[i]*prevLayer->weights[i][j];
         outputLayer->values[j] = (this->*activationFunc)(summ);
     }
+}
+
+void simpleNeuroNetworkClass::correctWeights(double wanted_output[])
+{
+    double *delta;
+
+    int num = outputLayer->numOfNeurons;
+    delta = new double[num];
+    for(int i=0; i<num; i++)
+        delta[i] = outputLayer->values[i] - wanted_output[i];
+
+}
+
+void simpleNeuroNetworkClass::setUsingB(bool mustUseB)
+{
+    useB = mustUseB;
 }
 
 simpleNeuroNetworkClass::simpleNeuroNetworkClass(funcType _functionType, double _alpha)
@@ -118,6 +136,7 @@ simpleNeuroNetworkClass::~simpleNeuroNetworkClass()
             }
             delete[] internalLayer[k]->weights;
             delete[] internalLayer[k]->values;
+            delete[] internalLayer[k]->b;
             delete internalLayer[k];
         }
         delete[] internalLayer;
@@ -131,6 +150,7 @@ simpleNeuroNetworkClass::~simpleNeuroNetworkClass()
         }
         delete[] inputLayer->weights;
         delete[] inputLayer->values;
+        delete[] inputLayer->b;
         delete inputLayer;
     }
 }
@@ -145,20 +165,26 @@ void simpleNeuroNetworkClass::createNetwork(int _numInput, int _numInternal, int
     inputLayer->numOfNeurons = _numInput;
     inputLayer->numOfNextLevelNeurons = _numInEachInternal[0];
     inputLayer->values = new double[inputLayer->numOfNeurons];
+    inputLayer->b = new double[inputLayer->numOfNextLevelNeurons];
+    for(int i=0; i<inputLayer->numOfNextLevelNeurons; i++)
+        inputLayer->b[i] = 0;
     inputLayer->weights = new double*[inputLayer->numOfNeurons];
     for(int i=0; i<inputLayer->numOfNeurons; i++)
     {
         inputLayer->weights[i] = new double[inputLayer->numOfNextLevelNeurons];
     }
 
-    internalLayer = new layerStruct*[_numInternal];
+    internalLayer = new layerStruct*[numOfInternalLayers];
     for(int k=0; k<numOfInternalLayers; k++)
     {
         internalLayer[k] = new layerStruct;
         internalLayer[k]->numOfNeurons = _numInEachInternal[k];
-        if(k==_numInternal-1) internalLayer[k]->numOfNextLevelNeurons = _numOutput;
+        if(k==numOfInternalLayers-1) internalLayer[k]->numOfNextLevelNeurons = _numOutput;
             else internalLayer[k]->numOfNextLevelNeurons = _numInEachInternal[k+1];
         internalLayer[k]->values = new double[internalLayer[k]->numOfNeurons];
+        internalLayer[k]->b = new double[internalLayer[k]->numOfNextLevelNeurons];
+        for(int i=0; i<internalLayer[k]->numOfNextLevelNeurons; i++)
+            internalLayer[k]->b[i] = 0;
         internalLayer[k]->weights = new double*[internalLayer[k]->numOfNeurons];
         for(int i=0; i<internalLayer[k]->numOfNeurons; i++)
         {

@@ -32,6 +32,8 @@ void MainWindow::on_pushButton_released()
 */
     std::cout << "test" << std::endl;
 
+    network.setUsingB(false);
+
     int qq=2;
     network.createNetwork(3,1,1,&qq);
     std::cout << "created" << std::endl;
@@ -56,4 +58,71 @@ void MainWindow::on_pushButton_released()
     double out;
     network.getOutputValues(&out);
     std::cout << out << std::endl;
+
+    std::cout << "just test 2d&3d arrays" << std::endl;
+    double ar1[3][3][3] = {{{0,1,2},{3,4,5},{6,7,8}},
+    {{10,11,12},{13,14,15},{16,17,18}},
+    {{20,21,22},{23,24,25},{26,27,28}}};
+    double *arp;
+    arp=&ar1[0][0][0];
+    for(int i=0;i<27;i++)
+    {
+        std::cout << *arp << ",";
+        arp++;
+    }
+    std::cout << std::endl;
+
+    simpleNeuroNetworkClass network2;
+
+    network2.setFunctionType(funcType::ReLU);
+/*
+    int qwerty1[2];
+    int qwerty2;
+    int *qwerty3;
+    network.createNetwork(2,1,1,qwerty1);
+    network.createNetwork(2,1,1,&qwerty2);
+    network.createNetwork(2,1,1,qwerty3);
+*/
+    std::cout << "test2" << std::endl;
+
+    int qq2[2] = {3,2};
+    network2.createNetwork(3,2,3,qq2);
+    std::cout << "created2" << std::endl;
+
+    double init2[3] = {1,2,3};
+    network2.setInitialValues(init2);
+    std::cout << "init vals2" << std::endl;
+
+    double ww1[9] = {
+        1,2,3,
+        10,20,30,
+        100,200,300
+    };
+    double ww2[3*2+2*3] = {
+        1,2,
+        10,20,
+        100,200,
+
+        1,2,3,
+        10,20,30
+    };
+    network2.setWeights(ww1,ww2);
+    std::cout << "weight set2" << std::endl;
+
+    network2.Calculate();
+    std::cout << "calculated" << std::endl;
+
+    www = network2.internalLayer[0]->values[0];
+    std::cout << www << std::endl;
+    www = network2.internalLayer[0]->values[1];
+    std::cout << www << std::endl;
+    www = network2.internalLayer[0]->values[2];
+    std::cout << www << std::endl;
+    www = network2.internalLayer[1]->values[0];
+    std::cout << www << std::endl;
+    www = network2.internalLayer[1]->values[1];
+    std::cout << www << std::endl;
+    double out2[3];
+    network2.getOutputValues(out2);
+    std::cout << out2[0] << "," << out2[1] << "," << out2[2] << std::endl;
 }
