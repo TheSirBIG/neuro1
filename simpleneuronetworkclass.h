@@ -24,26 +24,32 @@ typedef struct
 class simpleNeuroNetworkClass
 {
 public:
-    simpleNeuroNetworkClass(funcType _functionType = funcType::Sigmoid, double _alpha = 0);
+//    simpleNeuroNetworkClass(funcType _functionType = funcType::Sigmoid, double _alpha = 1);
+    simpleNeuroNetworkClass();
     ~simpleNeuroNetworkClass();
 
-    double alpha;
+    double alpha = 1;
     bool useB = false;
-    double (simpleNeuroNetworkClass::*activationFunc) (double);
-    double (simpleNeuroNetworkClass::*dactivationFunc) (double);
+//    double (simpleNeuroNetworkClass::*activationFunc) (double);
+//    double (simpleNeuroNetworkClass::*dactivationFunc) (double);
 
     void createNetwork(int _numInput, int _numInternal, int _numOutput, int _numInEachInternal[]);
     layerStruct *inputLayer = NULL;
     layerStruct **internalLayer = NULL;
     layerStruct *outputLayer = NULL;
 
-    void setFunctionType(funcType _functionType = funcType::Sigmoid, double _alpha = 0);
+//    void setFunctionType(funcType _functionType = funcType::Sigmoid, double _alpha = 0);
     void setWeights(double *input, double *internal);
+    void setB(double *input, double *internal);
+    void setAlpha(double _alpha);
+    void setActivationFunc(funcType *inttypes, funcType outtype);
     void setInitialValues(double input[]);
     void getOutputValues(double output[]);
     void Calculate(void);
-    void correctWeights(double wanted_output[]);
     void setUsingB(bool mustUseB);
+
+
+    void correctWeights(double wanted_output[]);
 private:
     int numOfInternalLayers = 1;
 

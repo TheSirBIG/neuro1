@@ -21,7 +21,7 @@ void MainWindow::on_pushButton_released()
 {
     simpleNeuroNetworkClass network;
 
-    network.setFunctionType(funcType::Sigmoid);
+//    network.setFunctionType(funcType::Sigmoid);
 /*
     int qwerty1[2];
     int qwerty2;
@@ -38,6 +38,10 @@ void MainWindow::on_pushButton_released()
     network.createNetwork(3,1,1,&qq);
     std::cout << "created" << std::endl;
 
+    funcType fti[1] = {funcType::Sigmoid};
+    funcType fto = funcType::Sigmoid;
+    network.setActivationFunc(fti,fto);
+    std::cout << "activation functions was setted" << std::endl;
     double init[3] = {1,0,1};
     network.setInitialValues(init);
     std::cout << "init vals" << std::endl;
@@ -74,7 +78,7 @@ void MainWindow::on_pushButton_released()
 
     simpleNeuroNetworkClass network2;
 
-    network2.setFunctionType(funcType::ReLU);
+//    network2.setFunctionType(funcType::ReLU);
 /*
     int qwerty1[2];
     int qwerty2;
@@ -88,6 +92,11 @@ void MainWindow::on_pushButton_released()
     int qq2[2] = {3,2};
     network2.createNetwork(3,2,3,qq2);
     std::cout << "created2" << std::endl;
+
+    funcType fti2[2] = {funcType::ReLU, funcType::ReLU};
+    funcType fto2 = funcType::ReLU;
+    network2.setActivationFunc(fti2,fto2);
+    std::cout << "activation functions2 was setted" << std::endl;
 
     double init2[3] = {1,2,3};
     network2.setInitialValues(init2);

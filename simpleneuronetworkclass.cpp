@@ -1,5 +1,6 @@
 #include "simpleneuronetworkclass.h"
 
+/*
 void simpleNeuroNetworkClass::setFunctionType(funcType _functionType, double _alpha)
 {
     alpha = _alpha;
@@ -35,6 +36,80 @@ void simpleNeuroNetworkClass::setFunctionType(funcType _functionType, double _al
         dactivationFunc = &simpleNeuroNetworkClass::dfuncSigmoid;
     }
 }
+*/
+
+void simpleNeuroNetworkClass::setActivationFunc(funcType *types, funcType outtype)
+{
+    //для внутренних и выходного
+    for(int i=0;i<numOfInternalLayers;i++)
+    {
+        switch (types[i])
+        {
+        case funcType::ELU:
+            internalLayer[i]->activationFunc = &simpleNeuroNetworkClass::funcELU;
+            internalLayer[i]->dactivationFunc = &simpleNeuroNetworkClass::dfuncELU;
+            break;
+        case funcType::LeakyReLU:
+            internalLayer[i]->activationFunc = &simpleNeuroNetworkClass::funcLeakyReLU;
+            internalLayer[i]->dactivationFunc = &simpleNeuroNetworkClass::dfuncLeakyReLU;
+            break;
+        case funcType::ReLU:
+            internalLayer[i]->activationFunc = &simpleNeuroNetworkClass::funcReLU;
+            internalLayer[i]->dactivationFunc = &simpleNeuroNetworkClass::dfuncReLU;
+            break;
+        case funcType::Softplus:
+            internalLayer[i]->activationFunc = &simpleNeuroNetworkClass::funcSoftplus;
+            internalLayer[i]->dactivationFunc = &simpleNeuroNetworkClass::dfuncSoftplus;
+            break;
+        case funcType::Softsign:
+            internalLayer[i]->activationFunc = &simpleNeuroNetworkClass::funcSoftsign;
+            internalLayer[i]->dactivationFunc = &simpleNeuroNetworkClass::dfuncSoftsign;
+            break;
+        case funcType::Tanh:
+            internalLayer[i]->activationFunc = &simpleNeuroNetworkClass::funcTanh;
+            internalLayer[i]->dactivationFunc = &simpleNeuroNetworkClass::dfuncTanh;
+            break;
+        case funcType::Sigmoid:
+        default:
+            internalLayer[i]->activationFunc = &simpleNeuroNetworkClass::funcSigmoid;
+            internalLayer[i]->dactivationFunc = &simpleNeuroNetworkClass::dfuncSigmoid;
+        }
+    }
+
+    switch (outtype)
+    {
+    case funcType::ELU:
+        outputLayer->activationFunc = &simpleNeuroNetworkClass::funcELU;
+        outputLayer->dactivationFunc = &simpleNeuroNetworkClass::dfuncELU;
+        break;
+    case funcType::LeakyReLU:
+        outputLayer->activationFunc = &simpleNeuroNetworkClass::funcLeakyReLU;
+        outputLayer->dactivationFunc = &simpleNeuroNetworkClass::dfuncLeakyReLU;
+        break;
+    case funcType::ReLU:
+        outputLayer->activationFunc = &simpleNeuroNetworkClass::funcReLU;
+        outputLayer->dactivationFunc = &simpleNeuroNetworkClass::dfuncReLU;
+        break;
+    case funcType::Softplus:
+        outputLayer->activationFunc = &simpleNeuroNetworkClass::funcSoftplus;
+        outputLayer->dactivationFunc = &simpleNeuroNetworkClass::dfuncSoftplus;
+        break;
+    case funcType::Softsign:
+        outputLayer->activationFunc = &simpleNeuroNetworkClass::funcSoftsign;
+        outputLayer->dactivationFunc = &simpleNeuroNetworkClass::dfuncSoftsign;
+        break;
+    case funcType::Tanh:
+        outputLayer->activationFunc = &simpleNeuroNetworkClass::funcTanh;
+        outputLayer->dactivationFunc = &simpleNeuroNetworkClass::dfuncTanh;
+        break;
+    case funcType::Sigmoid:
+    default:
+        outputLayer->activationFunc = &simpleNeuroNetworkClass::funcSigmoid;
+        outputLayer->dactivationFunc = &simpleNeuroNetworkClass::dfuncSigmoid;
+    }
+
+}
+
 
 void simpleNeuroNetworkClass::setWeights(double *input, double *internal)
 {
@@ -55,6 +130,29 @@ void simpleNeuroNetworkClass::setWeights(double *input, double *internal)
                 internalLayer[k]->weights[j][i] = *internal;
                 internal++;
             }
+}
+
+void simpleNeuroNetworkClass::setB(double *input, double *internal)
+{
+    //входной слой
+    for(int i=0; i<inputLayer->numOfNextLevelNeurons; i++)
+    {
+        inputLayer->b[i] = *input;
+        input++;
+    }
+    //внутренние слои
+    //сначала смещения для 1-го слоя, и т.д.
+    for(int k=0; k<numOfInternalLayers; k++)
+        for(int i=0; i<internalLayer[k]->numOfNextLevelNeurons; i++)
+        {
+            internalLayer[k]->b[i] = *internal;
+            internal++;
+        }
+}
+
+void simpleNeuroNetworkClass::setAlpha(double _alpha)
+{
+    alpha = _alpha;
 }
 
 void simpleNeuroNetworkClass::setInitialValues(double input[])
@@ -83,7 +181,8 @@ void simpleNeuroNetworkClass::Calculate()
             if(useB) summ = prevLayer->b[j];
             for(int i=0; i<prevLayer->numOfNeurons; i++)
                 summ += prevLayer->values[i]*prevLayer->weights[i][j];
-            internalLayer[k]->values[j] = (this->*activationFunc)(summ);
+//            internalLayer[k]->values[j] = (this->*activationFunc)(summ);
+            internalLayer[k]->values[j] = (this->*(internalLayer[k]->activationFunc))(summ);
         }
     }
     prevLayer = internalLayer[numOfInternalLayers-1];
@@ -93,7 +192,8 @@ void simpleNeuroNetworkClass::Calculate()
         if(useB) summ = prevLayer->b[j];
         for(int i=0; i<prevLayer->numOfNeurons; i++)
             summ += prevLayer->values[i]*prevLayer->weights[i][j];
-        outputLayer->values[j] = (this->*activationFunc)(summ);
+//        outputLayer->values[j] = (this->*activationFunc)(summ);
+        outputLayer->values[j] = (this->*(outputLayer->activationFunc))(summ);
     }
 }
 
@@ -113,9 +213,9 @@ void simpleNeuroNetworkClass::setUsingB(bool mustUseB)
     useB = mustUseB;
 }
 
-simpleNeuroNetworkClass::simpleNeuroNetworkClass(funcType _functionType, double _alpha)
+simpleNeuroNetworkClass::simpleNeuroNetworkClass()
 {
-    setFunctionType(_functionType, _alpha);
+//    setFunctionType(_functionType, _alpha);
 }
 
 simpleNeuroNetworkClass::~simpleNeuroNetworkClass()
