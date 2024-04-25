@@ -30,6 +30,7 @@ public:
 
     double alpha = 1;
     bool useB = false;
+    double learningRate = 0.3;
 //    double (simpleNeuroNetworkClass::*activationFunc) (double);
 //    double (simpleNeuroNetworkClass::*dactivationFunc) (double);
 
@@ -47,7 +48,7 @@ public:
     void getOutputValues(double output[]);
     void Calculate(void);
     void setUsingB(bool mustUseB);
-
+    void setLearningRate(double _learningRate);
 
     void correctWeights(double wanted_output[]);
 private:

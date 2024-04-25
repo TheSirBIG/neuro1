@@ -63,6 +63,26 @@ void MainWindow::on_pushButton_released()
     network.getOutputValues(&out);
     std::cout << out << std::endl;
 
+    www = 0;
+    network.correctWeights(&www);
+    std::cout << "new weight" << std::endl;
+    www = network.internalLayer[0]->weights[0][0];
+    std::cout << www << std::endl;
+    www = network.internalLayer[0]->weights[1][0];
+    std::cout << www << std::endl;
+
+    network.setLearningRate(5);
+    for(int i=0; i<1000; i++)
+    {
+        std::cout << "new calc:" << std::endl;
+        network.Calculate();
+        network.getOutputValues(&out);
+        std::cout << out << std::endl;
+        www = 0;
+        network.correctWeights(&www);
+    }
+
+
     std::cout << "just test 2d&3d arrays" << std::endl;
     double ar1[3][3][3] = {{{0,1,2},{3,4,5},{6,7,8}},
     {{10,11,12},{13,14,15},{16,17,18}},
@@ -88,6 +108,8 @@ void MainWindow::on_pushButton_released()
     network.createNetwork(2,1,1,qwerty3);
 */
     std::cout << "test2" << std::endl;
+
+    network2.setUsingB(false);
 
     int qq2[2] = {3,2};
     network2.createNetwork(3,2,3,qq2);

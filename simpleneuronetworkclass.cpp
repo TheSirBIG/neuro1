@@ -199,18 +199,59 @@ void simpleNeuroNetworkClass::Calculate()
 
 void simpleNeuroNetworkClass::correctWeights(double wanted_output[])
 {
-    double *delta;
+    double *error = new double[outputLayer->numOfNeurons];
+    for(int i=0; i<outputLayer->numOfNeurons; i++) error[i] = outputLayer->values[i] - wanted_output[i];
 
-    int num = outputLayer->numOfNeurons;
-    delta = new double[num];
-    for(int i=0; i<num; i++)
-        delta[i] = outputLayer->values[i] - wanted_output[i];
+    for(int k=numOfInternalLayers; k>=0; k--)
+    {
+        layerStruct *layer1, *layer2;
+        if(k == numOfInternalLayers)
+        {
+            layer2 = outputLayer;
+            layer1 = internalLayer[numOfInternalLayers-1];
+        }
+        else if(k == 0)
+        {
+            layer2 = internalLayer[0];
+            layer1 = inputLayer;
+        }
+        else
+        {
+            layer2 = internalLayer[k];
+            layer1 = internalLayer[k-1];
+        }
 
+        double *delta = new double[layer2->numOfNeurons];
+        for(int i=0; i<layer2->numOfNeurons; i++)
+            delta[i] = error[i] * (this->*(layer2->dactivationFunc))(layer2->values[i]);
+//            delta[i] = (this->*(layer2->dactivationFunc))(layer2->values[i]);
+        delete[] error;
+        error = new double[layer1->numOfNeurons];
+        for(int i=0; i<layer1->numOfNeurons; i++)
+        {
+            double sum = 0;
+            for(int j=0; j<layer1->numOfNextLevelNeurons; j++)
+            {
+                //коррекция весов
+                layer1->weights[i][j] = layer1->weights[i][j] - layer1->values[i]*delta[j]*learningRate;
+                //вычисление ошибки для слоя layer1
+                sum += layer1->weights[i][j] * delta[j];
+            }
+            error[i] = sum;
+        }
+        delete[] delta;
+    }
+    delete[] error;
 }
 
 void simpleNeuroNetworkClass::setUsingB(bool mustUseB)
 {
     useB = mustUseB;
+}
+
+void simpleNeuroNetworkClass::setLearningRate(double _learningRate)
+{
+    learningRate = _learningRate;
 }
 
 simpleNeuroNetworkClass::simpleNeuroNetworkClass()
