@@ -239,6 +239,9 @@ void simpleNeuroNetworkClass::correctWeights(double wanted_output[])
             }
             error[i] = sum;
         }
+        //коррекция смещений
+        for(int i=0; i<layer2->numOfNeurons; i++)
+            layer1->b[i] = layer1->b[i] - layer2->values[i]*delta[i]*learningRate;
         delete[] delta;
     }
     delete[] error;

@@ -33,6 +33,7 @@ void MainWindow::on_pushButton_released()
     std::cout << "test" << std::endl;
 
     network.setUsingB(false);
+//    network.setUsingB(true);
 
     int qq=2;
     network.createNetwork(3,1,1,&qq);
@@ -71,7 +72,7 @@ void MainWindow::on_pushButton_released()
     www = network.internalLayer[0]->weights[1][0];
     std::cout << www << std::endl;
 
-    network.setLearningRate(5);
+    network.setLearningRate(0.5);
     for(int i=0; i<1000; i++)
     {
         std::cout << "new calc:" << std::endl;
