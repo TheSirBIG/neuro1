@@ -2,6 +2,8 @@
 #define SIMPLENEURONETWORKCLASS_H
 
 #include <cmath>
+#include <iostream>
+#include <fstream>
 
 #define byte __Int8
 #define word __Int16
@@ -51,6 +53,9 @@ public:
     void setLearningRate(double _learningRate);
 
     void correctWeights(double wanted_output[]);
+
+    bool saveToFile(std::string fileName);
+    bool readFromFile(std::string fileName);
 private:
     int numOfInternalLayers = 1;
 

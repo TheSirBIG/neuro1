@@ -157,4 +157,6 @@ void MainWindow::on_pushButton_released()
     double out2[3];
     network2.getOutputValues(out2);
     std::cout << out2[0] << "," << out2[1] << "," << out2[2] << std::endl;
+
+    network.saveToFile("d:/tst.tst");
 }

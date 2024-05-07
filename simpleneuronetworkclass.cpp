@@ -247,6 +247,15 @@ void simpleNeuroNetworkClass::correctWeights(double wanted_output[])
     delete[] error;
 }
 
+bool simpleNeuroNetworkClass::readFromFile(std::string fileName)
+{
+    bool retval = true;
+    std::ifstream file;
+
+
+    return retval;
+}
+
 void simpleNeuroNetworkClass::setUsingB(bool mustUseB)
 {
     useB = mustUseB;
@@ -297,6 +306,35 @@ simpleNeuroNetworkClass::~simpleNeuroNetworkClass()
         delete[] inputLayer->b;
         delete inputLayer;
     }
+}
+
+bool simpleNeuroNetworkClass::saveToFile(std::string fileName)
+{
+    bool retval = true;
+    std::ofstream file;
+
+    file.open(fileName);
+    if(!file.is_open())
+    {
+        retval = false;
+    }
+    else
+    {
+        file << alpha << "," << useB << "," << learningRate << std::endl;
+        file << numOfInternalLayers << std::endl;
+
+        int len1 = inputLayer->numOfNeurons;
+        int len2 = inputLayer->numOfNextLevelNeurons;
+        file << len1 << len2 << std::endl;
+        file << inputLayer->values[0];
+        for(int i=1; i<len1; i++)
+            file << "," << inputLayer->values[i];
+        file << std::endl;
+
+    }
+    file.close();
+
+    return retval;
 }
 
 void simpleNeuroNetworkClass::createNetwork(int _numInput, int _numInternal, int _numOutput, int _numInEachInternal[])
